@@ -1,0 +1,14 @@
+{
+  "name": "雅思英语学习助手",
+  "short_name": "雅思GO",
+  "description": "零基础冲刺雅思7分，词汇·语法·写作·生活英语",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f0e17",
+  "theme_color": "#6c5ce7",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
