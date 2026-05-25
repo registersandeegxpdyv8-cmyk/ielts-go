@@ -145,6 +145,18 @@ textarea:focus{border-color:var(--purple)}
 .topic-scroll::-webkit-scrollbar{display:none}
 .topic-btn{padding:5px 13px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-size:12px;font-family:'Noto Sans SC',sans-serif;white-space:nowrap;cursor:pointer;flex-shrink:0}
 .topic-btn.active{background:var(--purple-dim);color:var(--purple-light);border-color:var(--purple-dim)}
+/* translate tooltip */
+.trans-tooltip{position:fixed;background:#1a1830;border:1px solid var(--purple);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--text);max-width:220px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.6);line-height:1.7}
+.trans-tooltip .t-word{color:var(--purple-light);font-weight:600;font-size:14px;margin-bottom:3px}
+.trans-tooltip .t-cn{color:var(--teal);font-size:13px}
+.trans-tooltip .t-loading{color:var(--text3);font-size:12px}
+/* quiz enhancements */
+.quiz-opt-row{margin-bottom:8px}
+.quiz-opt-cn{font-size:11px;color:var(--text3);padding:2px 14px 0;display:none}
+.quiz-explain{background:rgba(85,239,196,0.08);border:1px solid rgba(85,239,196,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.9;margin-top:8px;display:none}
+.quiz-explain.show{display:block}
+.quiz-explain .why-wrong{color:var(--coral)}
+.quiz-explain .why-right{color:var(--green)}
 </style>
 </head>
 <body>
@@ -463,6 +475,11 @@ textarea:focus{border-color:var(--purple)}
   </nav>
 </div>
 
+<div id="trans-tooltip" class="trans-tooltip" style="display:none">
+  <div class="t-word" id="t-word"></div>
+  <div class="t-cn" id="t-cn"></div>
+</div>
+
 <div id="install-banner">
   <span style="font-size:26px">📱</span>
   <div class="install-txt"><strong>添加到主屏幕</strong>像 App 一样使用，随时学习</div>
@@ -519,17 +536,42 @@ function renderWord(){
 function renderQuiz(w){
   quizDone = false;
   document.getElementById('quiz-q').textContent = w.quiz.q;
+  // option CN translations (brief)
+  const optCN = w.quiz.optCN || [];
   let h='';
   w.quiz.opts.forEach((o,i)=>{
-    h += `<button class="quiz-opt" onclick="checkQ(${i},${w.quiz.ans},this)">${'ABCD'[i]}. ${o}</button>`;
+    const cn = optCN[i] ? `<div class="quiz-opt-cn" id="ocn-${i}">${optCN[i]}</div>` : '';
+    h += `<div class="quiz-opt-row">
+      <button class="quiz-opt" id="qopt-${i}" onclick="checkQ(${i},${w.quiz.ans},this,${JSON.stringify(w.quiz.opts)},${w.quiz.ans})">${'ABCD'[i]}. ${o}</button>
+      ${cn}
+    </div>`;
   });
+  h += `<div class="quiz-explain" id="quiz-explain"></div>`;
   document.getElementById('quiz-opts').innerHTML = h;
 }
 
-function checkQ(chosen, correct, btn){
+async function checkQ(chosen, correct, btn, opts, ans){
   if(quizDone) return; quizDone = true;
-  document.querySelectorAll('.quiz-opt')[correct].classList.add('correct');
+  // show correct/wrong highlighting
+  document.getElementById('qopt-'+correct).classList.add('correct');
   if(chosen !== correct) btn.classList.add('wrong');
+  // show all CN translations
+  opts.forEach((_,i)=>{
+    const el = document.getElementById('ocn-'+i);
+    if(el) el.style.display = 'block';
+  });
+  // get AI explanation
+  const explainEl = document.getElementById('quiz-explain');
+  explainEl.classList.add('show');
+  explainEl.innerHTML = '<span style="color:var(--text3)">AI 正在解析...</span>';
+  const chosenText = opts[chosen];
+  const correctText = opts[correct];
+  const w = todayWords[curW];
+  const prompt = chosen === correct
+    ? `用2句简洁中文解释为什么"${correctText}"是正确答案，结合单词"${w.en}"（${w.cn}）的用法来说明。不要用markdown格式。`
+    : `用2-3句简洁中文解释：为什么"${chosenText}"是错误的，为什么"${correctText}"才是正确答案。结合单词"${w.en}"（${w.cn}）的语法用法来说明。不要用markdown格式。`;
+  const res = await callAI(prompt, 200);
+  explainEl.innerHTML = (chosen === correct ? '✅ 回答正确！<br>' : '❌ 选错了，来看看原因：<br>') + res.replace(/\n/g,'<br>');
 }
 
 function nextW(){ if(curW < todayWords.length-1){ curW++; renderWord(); } }
@@ -587,13 +629,18 @@ function updateWC(el){
   document.getElementById('wc-display').textContent = n + ' 词' + (n >= 250 ? ' ✅ 达标！' : ' （雅思 Task 2 建议 250+ 词）');
 }
 
-async function callAI(msg){
-  const r = await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:msg}]})
-  });
-  const d = await r.json();
-  return d.content&&d.content[0]?d.content[0].text:'请求失败，请重试。';
+const DS_KEY = 'sk-3738a7720989418d90283eaec68adc98';
+
+async function callAI(msg, maxTokens=1000){
+  try{
+    const r = await fetch('https://api.deepseek.com/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+      body:JSON.stringify({model:'deepseek-chat',max_tokens:maxTokens,messages:[{role:'user',content:msg}]})
+    });
+    const d = await r.json();
+    return d.choices&&d.choices[0]?d.choices[0].message.content:'请求失败，请重试。';
+  }catch(e){ return '连接失败，请检查网络。'; }
 }
 
 async function correctW(){
@@ -718,12 +765,13 @@ async function sendChat(){
     ...chatHist
   ];
   try{
-    const r = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:msgs})
+    const r = await fetch('https://api.deepseek.com/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+DS_KEY},
+      body:JSON.stringify({model:'deepseek-chat',max_tokens:400,messages:msgs})
     });
     const d = await r.json();
-    const reply = d.content&&d.content[0]?d.content[0].text:'请重试。';
+    const reply = d.choices&&d.choices[0]?d.choices[0].message.content:'请重试。';
     chatHist.push({role:'assistant', content:reply});
     addBubble('ai', reply);
   }catch(e){ addBubble('ai','连接失败，请检查网络后重试。'); }
@@ -732,6 +780,67 @@ async function sendChat(){
 
 document.getElementById('chat-input').addEventListener('keydown', e=>{
   if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+});
+
+// ─── Click to Translate ───
+const tooltip = document.getElementById('trans-tooltip');
+let transCache = {};
+let tooltipTimer;
+
+function getSelectedWord(){
+  const sel = window.getSelection();
+  if(sel && sel.toString().trim().length > 0){
+    return sel.toString().trim();
+  }
+  return null;
+}
+
+async function showTranslate(word, x, y){
+  if(!word || word.length < 2 || !/[a-zA-Z]/.test(word)) return;
+  // position tooltip
+  const tw = 220, margin = 10;
+  let left = Math.min(x, window.innerWidth - tw - margin);
+  let top = y + 12;
+  if(top + 120 > window.innerHeight) top = y - 120;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+  tooltip.style.display = 'block';
+  document.getElementById('t-word').textContent = word;
+  document.getElementById('t-cn').textContent = '翻译中...';
+
+  if(transCache[word.toLowerCase()]){
+    document.getElementById('t-cn').textContent = transCache[word.toLowerCase()];
+    return;
+  }
+  const res = await callAI(`请用中文简洁翻译这个英文单词或短语："${word}"。只回复：词性 + 中文意思 + 1个例句（英文+中文）。不超过50字，不用markdown。`, 150);
+  transCache[word.toLowerCase()] = res;
+  document.getElementById('t-cn').textContent = res;
+}
+
+document.addEventListener('mouseup', e=>{
+  clearTimeout(tooltipTimer);
+  tooltipTimer = setTimeout(()=>{
+    const word = getSelectedWord();
+    if(word) showTranslate(word, e.clientX, e.clientY);
+    else tooltip.style.display = 'none';
+  }, 300);
+});
+
+document.addEventListener('touchend', e=>{
+  clearTimeout(tooltipTimer);
+  tooltipTimer = setTimeout(()=>{
+    const word = getSelectedWord();
+    if(word){
+      const t = e.changedTouches[0];
+      showTranslate(word, t.clientX, t.clientY);
+    } else {
+      tooltip.style.display = 'none';
+    }
+  }, 400);
+});
+
+document.addEventListener('mousedown', e=>{
+  if(!tooltip.contains(e.target)) tooltip.style.display = 'none';
 });
 
 // ─── PWA Install ───
