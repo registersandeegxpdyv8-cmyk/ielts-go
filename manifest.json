@@ -1,7 +1,7 @@
 {
-  "name": "雅思英语学习助手",
+  "name": "雅思GO — 英语学习助手",
   "short_name": "雅思GO",
-  "description": "零基础冲刺雅思7分，词汇·语法·写作·生活英语",
+  "description": "1000词·完整语法·15+生活场景·AI写作批改",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#0f0e17",

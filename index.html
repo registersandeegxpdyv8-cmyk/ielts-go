@@ -10,467 +10,533 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>雅思GO — 英语学习助手</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Lora:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#0f0e17;--bg2:#1a1830;--bg3:#252340;
   --purple:#6c5ce7;--purple-light:#a29bfe;--purple-dim:#2d2b5e;
   --teal:#00cec9;--teal-dim:#004d4b;
-  --coral:#fd79a8;--coral-dim:#5c2040;
-  --amber:#fdcb6e;--amber-dim:#5c430d;
-  --green:#55efc4;--green-dim:#0d4a38;
+  --coral:#fd79a8;--amber:#fdcb6e;--green:#55efc4;--green-dim:#0d4a38;
+  --red-dim:#4a0d1a;--red:#ff6b8a;
   --text:#fffffe;--text2:#b8b5d4;--text3:#6b6896;
   --radius:16px;--radius-sm:10px;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;overflow:hidden}
-/* layout */
 #app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto}
-#header{padding:calc(var(--safe-top) + 16px) 20px 16px;flex-shrink:0}
-#header-inner{display:flex;align-items:center;justify-content:space-between}
-.app-title{font-family:'Lora',serif;font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.3px}
-.app-title span{color:var(--purple-light)}
-.streak-badge{display:flex;align-items:center;gap:5px;background:var(--purple-dim);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--purple-light)}
-#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 8px}
+#header{padding:calc(var(--safe-top) + 14px) 18px 12px;flex-shrink:0;background:var(--bg)}
+.header-row{display:flex;align-items:center;justify-content:space-between}
+.app-logo{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.app-logo span{color:var(--purple-light)}
+.streak{display:flex;align-items:center;gap:4px;background:var(--purple-dim);border-radius:20px;padding:4px 11px;font-size:12px;color:var(--purple-light)}
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 16px}
 #content::-webkit-scrollbar{display:none}
-/* bottom nav */
-#bottom-nav{flex-shrink:0;background:var(--bg2);border-top:1px solid rgba(255,255,255,0.06);padding:8px 0 calc(var(--safe-bottom) + 8px);display:flex}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border:none;background:none;color:var(--text3);font-size:10px;font-family:'Noto Sans SC',sans-serif;cursor:pointer;transition:color 0.2s}
+#bottom-nav{flex-shrink:0;background:var(--bg2);border-top:1px solid rgba(255,255,255,0.07);padding:6px 0 calc(var(--safe-bottom) + 6px);display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:none;color:var(--text3);font-size:10px;font-family:'Noto Sans SC',sans-serif;cursor:pointer;transition:color 0.2s}
 .nav-item.active{color:var(--purple-light)}
-.nav-icon{font-size:22px;line-height:1}
-/* panels */
+.nav-icon{font-size:20px;line-height:1}
 .panel{display:none}.panel.active{display:block}
-/* cards */
 .card{background:var(--bg2);border-radius:var(--radius);padding:16px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.06)}
-.card-accent{border-color:var(--purple-dim);background:linear-gradient(135deg,var(--bg2) 0%,var(--purple-dim) 100%)}
-.section-label{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;font-weight:500}
-/* word card */
-.word-hero{background:linear-gradient(135deg,#2d2b5e 0%,#1a3040 100%);border-radius:var(--radius);padding:28px 20px;margin-bottom:12px;text-align:center;position:relative;overflow:hidden}
-.word-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:var(--purple);opacity:0.12;border-radius:50%}
-.word-hero::after{content:'';position:absolute;bottom:-20px;left:-20px;width:70px;height:70px;background:var(--teal);opacity:0.1;border-radius:50%}
-.word-en{font-family:'Lora',serif;font-size:36px;font-weight:500;color:var(--text);margin-bottom:6px;position:relative;z-index:1}
-.word-ph{font-size:14px;color:var(--purple-light);margin-bottom:14px;position:relative;z-index:1}
-.word-cn{font-size:20px;color:var(--teal);font-weight:500;margin-bottom:10px;position:relative;z-index:1}
-.word-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.label{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;font-weight:500}
+/* Word hero */
+.word-hero{background:linear-gradient(135deg,#2d2b5e 0%,#1a3040 100%);border-radius:var(--radius);padding:26px 20px 20px;margin-bottom:12px;text-align:center;position:relative;overflow:hidden}
+.word-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:var(--purple);opacity:0.15;border-radius:50%}
+.w-en{font-size:34px;font-weight:700;color:var(--text);margin-bottom:4px;position:relative;z-index:1}
+.w-ph{font-size:13px;color:var(--purple-light);margin-bottom:12px;position:relative;z-index:1}
+.w-cn{font-size:19px;color:var(--teal);font-weight:500;margin-bottom:8px;position:relative;z-index:1}
+.w-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
 .tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
-.tag-purple{background:rgba(108,92,231,0.2);color:var(--purple-light)}
-.tag-teal{background:rgba(0,206,201,0.15);color:var(--teal)}
-.tag-amber{background:rgba(253,203,110,0.15);color:var(--amber)}
-.tag-coral{background:rgba(253,121,168,0.15);color:var(--coral)}
-.example-box{background:rgba(255,255,255,0.04);border-left:3px solid var(--purple);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:10px 12px;margin-top:10px}
-.example-en{font-size:14px;color:var(--purple-light);line-height:1.7;margin-bottom:4px}
-.example-cn{font-size:12px;color:var(--text3);line-height:1.6}
-/* quiz */
-.quiz-opt{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:14px;font-family:'Noto Sans SC',sans-serif;cursor:pointer;transition:all 0.2s}
-.quiz-opt:active{transform:scale(0.98)}
+.tag-p{background:rgba(108,92,231,0.2);color:var(--purple-light)}
+.tag-t{background:rgba(0,206,201,0.15);color:var(--teal)}
+.tag-a{background:rgba(253,203,110,0.15);color:var(--amber)}
+.tag-c{background:rgba(253,121,168,0.15);color:var(--coral)}
+.ex-box{background:rgba(255,255,255,0.05);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:10px 12px;margin-top:10px;text-align:left}
+.ex-en{font-size:13px;color:var(--purple-light);line-height:1.7;margin-bottom:3px}
+.ex-cn{font-size:12px;color:var(--text3);line-height:1.6}
+.tip-box{background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.2);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:10px}
+/* Quiz */
+.quiz-q{font-size:13px;color:var(--text2);margin-bottom:10px}
+.quiz-opt{display:block;width:100%;text-align:left;padding:11px 14px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:13px;font-family:'Noto Sans SC',sans-serif;cursor:pointer;transition:all 0.2s}
 .quiz-opt.correct{background:var(--green-dim);border-color:var(--green);color:var(--green)}
-.quiz-opt.wrong{background:var(--coral-dim);border-color:var(--coral);color:var(--coral)}
-/* buttons */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius-sm);border:none;font-size:15px;font-family:'Noto Sans SC',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px}
+.quiz-opt.wrong{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+/* Progress */
+.prog-track{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--teal));border-radius:2px;transition:width 0.4s}
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:var(--radius-sm);border:none;font-size:14px;font-family:'Noto Sans SC',sans-serif;font-weight:500;cursor:pointer;transition:all 0.2s;width:100%}
 .btn:active{transform:scale(0.97)}
-.btn-primary{background:var(--purple);color:#fff}
-.btn-secondary{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,0.1)}
+.btn-pri{background:var(--purple);color:#fff}
+.btn-sec{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,0.1)}
 .btn-row{display:flex;gap:8px;margin-top:12px}
 .btn-row .btn{font-size:13px;padding:11px}
-/* progress */
-.progress-track{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-bottom:16px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--teal));border-radius:2px;transition:width 0.4s ease}
-/* grammar */
-.grammar-toggle{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer}
-.grammar-toggle:last-child{border-bottom:none}
-.g-title{font-size:14px;color:var(--text);font-weight:500}
-.g-arrow{font-size:16px;color:var(--text3);transition:transform 0.25s}
-.g-arrow.open{transform:rotate(180deg)}
-.g-body{overflow:hidden;max-height:0;transition:max-height 0.35s ease}
-.g-body.open{max-height:600px}
-.g-body-inner{padding:12px 0 4px}
-.g-rule{background:rgba(108,92,231,0.1);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:8px}
-.g-ex{font-size:13px;line-height:1.8}
-.g-ex .en{color:var(--purple-light)}
-.g-ex .cn{color:var(--text3);font-size:12px}
-.g-ex .err{color:var(--coral);text-decoration:line-through}
-.g-ex .ok{color:var(--green);font-weight:500}
-/* subtabs */
+.btn-xs{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:12px;font-family:'Noto Sans SC',sans-serif;cursor:pointer}
+/* Grammar */
 .subtabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
 .subtabs::-webkit-scrollbar{display:none}
-.subtab{padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-size:12px;font-family:'Noto Sans SC',sans-serif;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.subtab{padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-size:12px;font-family:'Noto Sans SC',sans-serif;white-space:nowrap;cursor:pointer;flex-shrink:0}
 .subtab.active{background:var(--purple-dim);color:var(--purple-light);border-color:var(--purple-dim)}
-/* writing */
+.g-toggle{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.06);cursor:pointer}
+.g-toggle:last-of-type{border-bottom:none}
+.g-title{font-size:14px;color:var(--text);font-weight:500}
+.g-arrow{font-size:14px;color:var(--text3);transition:transform 0.25s;flex-shrink:0}
+.g-body{overflow:hidden;max-height:0;transition:max-height 0.35s ease}
+.g-body.open{max-height:800px}
+.g-inner{padding:12px 0 4px}
+.g-rule{background:rgba(108,92,231,0.1);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:8px}
+.g-ex{font-size:13px;line-height:1.9;margin-top:4px}
+.ok{color:var(--green);font-weight:500}
+.err{color:var(--coral);text-decoration:line-through}
+.g-cn{color:var(--text3);font-size:12px}
+/* Writing */
 .prompt-card{background:linear-gradient(135deg,var(--purple-dim),var(--teal-dim));border-radius:var(--radius);padding:16px;margin-bottom:12px}
-.prompt-label{font-size:10px;color:var(--purple-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-weight:500}
+.prompt-lbl{font-size:10px;color:var(--purple-light);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;font-weight:500}
 .prompt-en{font-size:13px;color:var(--text);line-height:1.7;margin-bottom:6px}
 .prompt-cn{font-size:12px;color:var(--teal);line-height:1.6}
-textarea{width:100%;min-height:140px;background:var(--bg3);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:14px;font-size:14px;font-family:'Noto Sans SC',sans-serif;color:var(--text);resize:none;line-height:1.8;outline:none;-webkit-appearance:none}
+textarea{width:100%;min-height:130px;background:var(--bg3);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:13px;font-size:14px;font-family:'Noto Sans SC',sans-serif;color:var(--text);resize:none;line-height:1.8;outline:none;-webkit-appearance:none}
 textarea:focus{border-color:var(--purple)}
-.word-count{font-size:11px;color:var(--text3);text-align:right;margin-top:5px}
-/* result */
+.wc{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
 .result-box{background:var(--bg2);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:16px;margin-top:12px;display:none}
 .result-box.show{display:block}
 .result-text{font-size:13px;line-height:2;color:var(--text2)}
-/* loading dots */
 .loading{display:none;align-items:center;gap:6px;padding:12px 0;color:var(--text3);font-size:13px}
 .loading.show{display:flex}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--purple-light);animation:bounce 1s infinite}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--purple-light);animation:bounce 1s infinite}
 .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-/* life scenarios */
-.scenario{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
-.scenario:last-child{border-bottom:none}
-.scenario-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.scenario-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
-.scenario-en{font-size:13px;color:var(--purple-light);margin-bottom:2px;line-height:1.5}
-.scenario-cn{font-size:11px;color:var(--text3);margin-bottom:6px}
-.btn-xs{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:var(--bg3);color:var(--text2);font-size:12px;font-family:'Noto Sans SC',sans-serif;cursor:pointer}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+/* Life scenarios */
+.scene{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.scene:last-child{border-bottom:none}
+.scene-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.scene-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
+.scene-en{font-size:13px;color:var(--purple-light);margin-bottom:2px;line-height:1.5}
+.scene-cn{font-size:11px;color:var(--text3);margin-bottom:6px}
+/* Chat */
+.chat-wrap{margin-top:12px}
+.chat-msgs{max-height:280px;overflow-y:auto;margin-bottom:12px}
+.chat-msgs::-webkit-scrollbar{display:none}
+.bubble-wrap{display:flex;flex-direction:column;margin-bottom:8px}
+.bubble-wrap.user{align-items:flex-end}
+.bubble{max-width:85%;padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.bubble.ai{background:var(--bg3);color:var(--text);border-radius:16px 16px 16px 4px}
+.bubble.user{background:var(--purple);color:#fff;border-radius:16px 16px 4px 16px}
+.chat-input-row{display:flex;gap:8px}
+.chat-input-row textarea{min-height:42px;height:42px;flex:1}
+.send-btn{width:48px;flex-shrink:0;border-radius:var(--radius-sm);background:var(--purple);border:none;color:#fff;font-size:18px;cursor:pointer}
+/* Word counter row */
+.wrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.wcount{font-size:13px;color:var(--text3)}
+.wcount b{color:var(--purple-light)}
 /* idiom */
-.idiom-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
-.idiom-row:last-child{border-bottom:none}
+.idiom{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.idiom:last-child{border-bottom:none}
 .idiom-en{font-size:14px;color:var(--text)}
 .idiom-cn{font-size:12px;color:var(--text3);margin-top:2px}
-/* word counter footer */
-.wc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.wc-num{font-size:13px;color:var(--text3)}
-.wc-num span{color:var(--purple-light);font-weight:500}
-/* tip box */
-.tip-box{background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.2);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:10px}
 /* install banner */
-#install-banner{display:none;position:fixed;bottom:calc(var(--safe-bottom) + 72px);left:16px;right:16px;background:var(--purple);border-radius:var(--radius);padding:14px 16px;z-index:100;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(108,92,231,0.4)}
+#install-banner{display:none;position:fixed;bottom:calc(var(--safe-bottom) + 70px);left:12px;right:12px;background:var(--purple);border-radius:var(--radius);padding:14px 15px;z-index:100;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(108,92,231,0.5)}
 #install-banner.show{display:flex}
-.install-text{flex:1;font-size:13px;color:#fff;line-height:1.4}
-.install-text strong{font-size:14px;display:block;margin-bottom:2px}
-.btn-install{padding:8px 16px;background:#fff;color:var(--purple);border-radius:20px;border:none;font-size:12px;font-weight:700;font-family:'Noto Sans SC',sans-serif;cursor:pointer;white-space:nowrap}
-.btn-dismiss{background:none;border:none;color:rgba(255,255,255,0.6);font-size:18px;cursor:pointer;flex-shrink:0}
+.install-txt{flex:1;font-size:13px;color:#fff;line-height:1.4}
+.install-txt strong{display:block;font-size:14px;margin-bottom:2px}
+#btn-install{padding:7px 14px;background:#fff;color:var(--purple);border-radius:20px;border:none;font-size:12px;font-weight:700;font-family:'Noto Sans SC',sans-serif;cursor:pointer;white-space:nowrap}
+#btn-dismiss{background:none;border:none;color:rgba(255,255,255,0.6);font-size:18px;cursor:pointer;flex-shrink:0;padding:0}
+/* topic filter */
+.topic-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+.topic-scroll::-webkit-scrollbar{display:none}
+.topic-btn{padding:5px 13px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-size:12px;font-family:'Noto Sans SC',sans-serif;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.topic-btn.active{background:var(--purple-dim);color:var(--purple-light);border-color:var(--purple-dim)}
 </style>
 </head>
 <body>
 <div id="app">
-  <!-- Header -->
   <div id="header">
-    <div id="header-inner">
-      <div class="app-title">雅思<span>GO</span></div>
-      <div class="streak-badge">🔥 <span id="streak-count">1</span> 天连续</div>
+    <div class="header-row">
+      <div class="app-logo">雅思<span>GO</span></div>
+      <div class="streak">🔥 <span id="streak-n">1</span> 天连续</div>
     </div>
   </div>
 
-  <!-- Content -->
   <div id="content">
 
-    <!-- ===== VOCAB PANEL ===== -->
+    <!-- VOCAB -->
     <div id="panel-vocab" class="panel active">
-      <div class="progress-track"><div class="progress-fill" id="vocab-prog" style="width:20%"></div></div>
-
-      <div class="wc-row">
-        <span class="wc-num">第 <span id="w-idx">1</span> / 5 个单词</span>
-        <span class="tag tag-teal" id="w-level">雅思高频</span>
+      <div class="prog-track"><div class="prog-fill" id="vprog" style="width:6%"></div></div>
+      <div class="wrow">
+        <span class="wcount">今日 <b id="w-idx">1</b> / <b id="w-total">15</b></span>
+        <span class="tag tag-t" id="w-topic">学术</span>
       </div>
-
       <div class="word-hero">
-        <div class="word-en" id="w-en">Ambitious</div>
-        <div class="word-ph" id="w-ph">/æmˈbɪʃəs/</div>
-        <div class="word-cn" id="w-cn">有雄心的，有抱负的</div>
-        <div class="word-tags"><span class="tag tag-purple" id="w-pos">形容词 adj.</span></div>
-        <div class="example-box" id="w-ex">
-          <div class="example-en">She is ambitious and always sets high goals for herself.</div>
-          <div class="example-cn">她很有抱负，总是为自己设立远大目标。</div>
+        <div class="w-en" id="w-en">—</div>
+        <div class="w-ph" id="w-ph"></div>
+        <div class="w-cn" id="w-cn"></div>
+        <div class="w-tags">
+          <span class="tag tag-p" id="w-pos"></span>
+          <span class="tag tag-a" id="w-level"></span>
         </div>
+        <div class="ex-box" id="w-ex"></div>
       </div>
-
       <div class="card">
-        <div class="section-label">记忆技巧</div>
-        <div class="tip-box" id="w-tip">
-          💡 <strong>词根拆解：</strong>ambi（两边）+ ous（有…特征）→ 两边都想要 → 野心勃勃<br>
-          🔗 <strong>同族词：</strong>ambition（n.抱负）、ambitiously（adv.野心勃勃地）
-        </div>
+        <div class="label">记忆技巧</div>
+        <div class="tip-box" id="w-tip"></div>
       </div>
-
       <div class="card">
-        <div class="section-label">小测验 — 选出正确用法</div>
-        <div id="quiz-area"></div>
+        <div class="label">小测验</div>
+        <div class="quiz-q" id="quiz-q"></div>
+        <div id="quiz-opts"></div>
       </div>
-
       <div class="btn-row">
-        <button class="btn btn-secondary" onclick="prevWord()">← 上一个</button>
-        <button class="btn btn-primary" onclick="nextWord()">下一个 →</button>
+        <button class="btn btn-sec" onclick="prevW()">← 上一个</button>
+        <button class="btn btn-pri" onclick="nextW()">下一个 →</button>
       </div>
+      <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:14px">明天将自动更新15个新单词 ✨</p>
     </div>
 
-    <!-- ===== GRAMMAR PANEL ===== -->
+    <!-- GRAMMAR -->
     <div id="panel-grammar" class="panel">
       <div class="subtabs">
-        <button class="subtab active" onclick="switchGrammar('basic',this)">入门基础</button>
-        <button class="subtab" onclick="switchGrammar('tense',this)">时态系统</button>
-        <button class="subtab" onclick="switchGrammar('sentence',this)">高分句型</button>
+        <button class="subtab active" onclick="switchG('basic',this)">入门基础</button>
+        <button class="subtab" onclick="switchG('tense',this)">时态系统</button>
+        <button class="subtab" onclick="switchG('sentence',this)">高分句型</button>
+        <button class="subtab" onclick="switchG('advanced',this)">高级语法</button>
+        <button class="subtab" onclick="switchG('common',this)">常见错误</button>
       </div>
 
       <div id="g-basic">
-        <div class="card">
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">名词与冠词 (a / an / the)</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 不定冠词 a/an 用于首次提到；the 用于双方都知道的事物</div>
-            <div class="g-ex"><div class="en">I saw <b style="color:var(--green)">a</b> dog in the park. <b style="color:var(--green)">The</b> dog was very friendly.</div><div class="cn">我在公园看到一只狗。那只狗非常友好。</div></div>
-            <div class="g-ex" style="margin-top:8px"><div class="en">❌ <span class="err">the Harvard</span> → ✅ <span class="ok">Harvard</span></div></div>
+        <div class="card" id="g-basic-card">
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">📌 名词与冠词 a/an/the</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">规则1：<b>a/an</b> 用于泛指，首次提到的单数可数名词<br>规则2：<b>the</b> 用于特指，双方都知道的事物<br>规则3：不可数名词和复数泛指前不加冠词</div>
+            <div class="g-ex"><span class="ok">A</span> dog is a loyal animal.（泛指所有狗）<br><span class="ok">The</span> dog in the park was friendly.（特指那只狗）<br><span class="ok">Dogs</span> are loyal animals.（复数泛指，无冠词）</div>
+            <div class="g-ex" style="margin-top:8px">❌ <span class="err">I go to the school every day.</span><br>✅ I go to <span class="ok">school</span> every day.（固定短语，无冠词）</div>
           </div></div>
 
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">主谓一致</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 单数主语 → 动词+s；复数主语 → 动词不加s</div>
-            <div class="g-ex"><div class="en">✅ She <span class="ok">works</span> hard.&nbsp;&nbsp;✅ They <span class="ok">work</span> hard.</div></div>
-            <div class="g-ex" style="margin-top:6px"><div class="en">❌ The team <span class="err">are playing</span> → ✅ The team <span class="ok">is playing</span></div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">📌 主谓一致</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">单数主语 → 谓语动词加 s/es<br>复数主语 → 谓语动词不变<br>特殊：集合名词（team/family）通常视为单数</div>
+            <div class="g-ex">She <span class="ok">works</span> hard every day.<br>They <span class="ok">work</span> hard every day.<br>The team <span class="ok">is</span> ready. / The staff <span class="ok">are</span> on strike.</div>
+            <div class="g-ex" style="margin-top:6px">❌ <span class="err">Everyone have a chance.</span><br>✅ Everyone <span class="ok">has</span> a chance.（everyone = 单数）</div>
           </div></div>
 
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">形容词 vs 副词</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 形容词修饰名词；副词修饰动词/形容词/其他副词</div>
-            <div class="g-ex"><div class="en">She is a <span class="ok">quick</span> learner. (形容词)<br>She learns <span class="ok">quickly</span>. (副词)</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">📌 形容词 vs 副词</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">形容词：修饰名词，放在名词前或 be 动词后<br>副词：修饰动词、形容词或其他副词，常以 -ly 结尾</div>
+            <div class="g-ex">She is a <span class="ok">quick</span> learner.（quick 修饰名词 learner）<br>She learns <span class="ok">quickly</span>.（quickly 修饰动词 learns）<br>He is <span class="ok">extremely</span> talented.（extremely 修饰形容词）</div>
           </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">📌 比较级与最高级</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">单音节：adj + er / the + adj + est<br>多音节：more + adj / the most + adj<br>不规则：good→better→best; bad→worse→worst</div>
+            <div class="g-ex"><span class="ok">Taller</span> than / <span class="ok">the tallest</span><br><span class="ok">More beautiful</span> than / <span class="ok">the most beautiful</span><br>This is <span class="ok">the best</span> solution available.</div>
+            <div class="g-ex" style="margin-top:6px">❌ <span class="err">more better</span> ✅ <span class="ok">better</span>（不可双重比较）</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">📌 介词使用</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">时间介词：at（时刻）/ on（日期）/ in（月/年/段落时间）<br>地点介词：at（具体地点）/ on（表面）/ in（内部）</div>
+            <div class="g-ex"><span class="ok">at</span> 8pm / <span class="ok">on</span> Monday / <span class="ok">in</span> January / <span class="ok">in</span> 2024<br><span class="ok">at</span> school / <span class="ok">on</span> the table / <span class="ok">in</span> the box</div>
+            <div class="g-ex" style="margin-top:6px">❌ <span class="err">at the morning</span> ✅ <span class="ok">in the morning</span></div>
+          </div></div>
+
         </div>
       </div>
 
       <div id="g-tense" style="display:none">
         <div class="card">
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">现在时 vs 现在进行时</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 一般现在时：习惯/规律；进行时：此刻正在发生</div>
-            <div class="g-ex"><div class="en">I <span class="ok">drink</span> coffee every morning.<br>I <span class="ok">am drinking</span> coffee right now.</div><div class="cn">我每天喝咖啡 / 我现在正在喝</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⏰ 一般现在时 vs 进行时</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">一般现在时：习惯、规律、真理（always/usually/every day）<br>现在进行时：此刻正在发生（now/right now/at the moment）</div>
+            <div class="g-ex">I <span class="ok">drink</span> coffee every morning.（习惯）<br>I <span class="ok">am drinking</span> coffee right now.（此刻）<br>Water <span class="ok">boils</span> at 100°C.（科学真理）</div>
           </div></div>
 
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">过去时 vs 现在完成时</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 过去时：过去具体时间；完成时：过去对现在有影响</div>
-            <div class="g-ex"><div class="en">I <span class="ok">visited</span> Beijing <span style="color:var(--amber)">last year</span>.<br>I <span class="ok">have visited</span> Beijing. (有过这经历)</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⏰ 一般过去时 vs 现在完成时</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">一般过去时：过去某个具体时间发生（yesterday/last year/in 2020）<br>现在完成时：过去动作对现在有影响（ever/never/already/yet/just）</div>
+            <div class="g-ex">I <span class="ok">visited</span> Paris last year.（具体时间）<br>I <span class="ok">have visited</span> Paris three times.（经历，影响现在）<br>She <span class="ok">has just finished</span> her homework.（刚完成）</div>
+            <div class="g-ex" style="margin-top:6px">❌ <span class="err">I have seen him yesterday.</span><br>✅ I <span class="ok">saw</span> him yesterday.（yesterday 必须用过去时）</div>
           </div></div>
 
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">将来时的三种表达</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 will：临时决定；be going to：已计划；进行时：确定安排</div>
-            <div class="g-ex"><div class="en"><span class="ok">I'll</span> help you. (此刻决定)<br><span class="ok">I'm going to</span> study tonight. (已计划)<br><span class="ok">I'm meeting</span> Tom at 3pm tomorrow. (确认)</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⏰ 将来时的多种表达</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">will + V：临时决定、预测<br>be going to + V：已计划好的意图<br>现在进行时：确定的安排（有时间地点）<br>will be + Ving：将来某时正在进行</div>
+            <div class="g-ex"><span class="ok">I'll</span> open the door.（临时决定）<br><span class="ok">I'm going to</span> study medicine.（已决定的计划）<br><span class="ok">I'm meeting</span> her at 3pm tomorrow.（已安排）<br>This time tomorrow, I <span class="ok">will be flying</span> to London.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⏰ 过去完成时</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">had + 过去分词：在过去某时间点之前已完成的动作<br>常与 before/when/after/by the time 连用</div>
+            <div class="g-ex">When I arrived, she <span class="ok">had already left</span>.<br>He <span class="ok">had studied</span> English before he moved to London.<br>By 2020, scientists <span class="ok">had discovered</span> many new treatments.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⏰ 被动语态</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">结构：be + 过去分词（by + 动作执行者）<br>雅思写作常用：强调结果而非动作者</div>
+            <div class="g-ex">The report <span class="ok">was published</span> last month.<br>New laws <span class="ok">have been introduced</span> to protect workers.<br>The building <span class="ok">is being renovated</span> at the moment.</div>
           </div></div>
         </div>
       </div>
 
       <div id="g-sentence" style="display:none">
         <div class="card">
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">让步状语从句</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 Although / Even though / Despite + 从句，主句</div>
-            <div class="g-ex"><div class="en"><span class="ok">Although</span> technology has many benefits, it also brings challenges.</div><div class="cn">尽管技术有许多好处，但它也带来了挑战。</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">✨ 让步状语从句</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">Although/Though/Even though + 从句, 主句（从句含动词）<br>Despite/In spite of + 名词/动名词，主句（后接名词）</div>
+            <div class="g-ex"><span class="ok">Although</span> technology has benefits, it also brings challenges.<br><span class="ok">Despite</span> the challenges, she succeeded.<br><span class="ok">In spite of</span> working hard, he failed the exam.</div>
+            <div class="g-ex" style="margin-top:6px">❌ <span class="err">Despite she worked hard, she failed.</span><br>✅ <span class="ok">Despite working</span> hard, she failed.（despite 后不接从句）</div>
           </div></div>
 
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">条件状语从句</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 真实条件：If + 现在时, will；虚拟：If + 过去时, would</div>
-            <div class="g-ex"><div class="en"><span class="ok">If the government invests</span> in education, it <span class="ok">will</span> benefit society.<br><span class="ok">If I were</span> the president, I <span class="ok">would</span> focus on environment.</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">✨ 条件句（真实 vs 虚拟）</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">第一条件句（真实可能）：If + 现在时, will + V<br>第二条件句（虚拟/不可能）：If + 过去时, would + V<br>第三条件句（过去虚拟）：If + 过去完成, would have + V</div>
+            <div class="g-ex"><span class="ok">If</span> it rains, I <span class="ok">will</span> stay home.（真实条件）<br><span class="ok">If</span> I were rich, I <span class="ok">would</span> travel the world.（虚拟）<br><span class="ok">If</span> she had studied, she <span class="ok">would have passed</span>.（过去虚拟）</div>
           </div></div>
 
-          <div class="grammar-toggle" onclick="toggleG(this)"><span class="g-title">强调句 & 并列结构</span><span class="g-arrow">▾</span></div>
-          <div class="g-body"><div class="g-body-inner">
-            <div class="g-rule">📌 It is/was...that... 强调句；Not only...but also... 并列</div>
-            <div class="g-ex"><div class="en"><span class="ok">It is education that</span> plays a crucial role in development.<br><span class="ok">Not only</span> does exercise improve health, <span class="ok">but it also</span> boosts mood.</div></div>
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">✨ 强调句型</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">It is/was + 强调部分 + that/who + 其余部分<br>Not only...but also...（不仅...而且...）<br>What + 从句 + is/are + 强调部分</div>
+            <div class="g-ex"><span class="ok">It is education that</span> shapes a child's future.<br><span class="ok">Not only</span> does exercise improve fitness, <span class="ok">but it also</span> boosts mood.<br><span class="ok">What we need</span> is a comprehensive plan.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">✨ 定语从句</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">限制性定语从句：who（人）/ which/that（物）/ whose（所有格）<br>非限制性定语从句：which（不用that），加逗号，补充信息</div>
+            <div class="g-ex">The student <span class="ok">who</span> works hard will succeed.<br>The book <span class="ok">that/which</span> I read was fascinating.<br>Climate change, <span class="ok">which</span> affects all countries, requires global action.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">✨ 倒装句</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">否定副词置首时需倒装：Never/Rarely/Seldom/Not only + 助动词 + 主语<br>雅思写作高分句型</div>
+            <div class="g-ex"><span class="ok">Never have</span> I seen such dedication.<br><span class="ok">Rarely does</span> the government admit mistakes.<br><span class="ok">Not only did</span> he win the prize, but he also broke the record.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div id="g-advanced" style="display:none">
+        <div class="card">
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">🔥 分词短语</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">现在分词短语（-ing）：表主动、同时发生<br>过去分词短语（-ed）：表被动、已完成</div>
+            <div class="g-ex"><span class="ok">Having studied</span> hard, she passed the exam.<br><span class="ok">Overwhelmed by</span> the workload, he asked for help.<br><span class="ok">Looking out of the window,</span> she saw a deer.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">🔥 名词性从句</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">that/whether/what/how 引导的从句作主语或宾语<br>It is + adj + that...（形式主语）</div>
+            <div class="g-ex"><span class="ok">That</span> education is vital is widely accepted.<br><span class="ok">It is essential that</span> governments take action.<br>The question is <span class="ok">whether</span> this policy is effective.<br>I believe <span class="ok">that</span> technology has more benefits than drawbacks.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">🔥 虚拟语气特殊用法</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">suggest/recommend/insist + that + (should) V原形<br>wish + 过去时（现在虚拟）/ wish + 过去完成（过去虚拟）<br>as if/as though + 虚拟语气</div>
+            <div class="g-ex">I suggest that the government <span class="ok">(should) invest</span> in education.<br>I wish I <span class="ok">were</span> able to speak five languages.<br>He talks as if he <span class="ok">were</span> an expert.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">🔥 情态动词的完成时</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">could have + V-ed：本可以（但没有）<br>should have + V-ed：本应该（但没有）<br>must have + V-ed：过去一定发生了<br>might have + V-ed：过去可能发生了</div>
+            <div class="g-ex">She <span class="ok">could have</span> won if she had tried harder.<br>You <span class="ok">should have</span> told me earlier.<br>He <span class="ok">must have</span> forgotten the meeting.<br>They <span class="ok">might have</span> taken a different route.</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">🔥 复合句 vs 复杂句</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">并列句（Compound）：两个独立分句用 and/but/so/or 连接<br>复杂句（Complex）：主句 + 从句（because/although/when/if...）<br>雅思写作需混合使用两种句型</div>
+            <div class="g-ex">Compound: The economy grew, <span class="ok">and</span> unemployment fell.<br>Complex: <span class="ok">Although</span> the economy grew, inequality persisted.<br>Complex: Poverty increases <span class="ok">when</span> governments cut social spending.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div id="g-common" style="display:none">
+        <div class="card">
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⚠️ 中国学生最常犯的错误</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">以下是雅思考试中扣分最多的错误类型</div>
+            <div class="g-ex">❌ <span class="err">The informations are useful.</span><br>✅ <span class="ok">The information is useful.</span>（information 不可数）<br><br>❌ <span class="err">Peoples should pay more tax.</span><br>✅ <span class="ok">People should pay more tax.</span>（people 已是复数）<br><br>❌ <span class="err">I am agree with this view.</span><br>✅ <span class="ok">I agree with this view.</span>（agree 是动词，不用 am）<br><br>❌ <span class="err">He suggest that we should...</span><br>✅ <span class="ok">He suggests</span> that we should...（第三人称单数）</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⚠️ 混淆词辨析</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-ex"><b style="color:var(--amber)">affect vs effect</b><br>affect（v.影响）: Pollution <span class="ok">affects</span> health.<br>effect（n.影响）: Pollution has a negative <span class="ok">effect</span>.<br><br><b style="color:var(--amber)">rise vs raise</b><br>rise（自动词，不接宾语）: Prices <span class="ok">rose</span> by 10%.<br>raise（他动词，接宾语）: The company <span class="ok">raised</span> prices.<br><br><b style="color:var(--amber)">fewer vs less</b><br>fewer（可数名词）: <span class="ok">fewer</span> people, <span class="ok">fewer</span> cars<br>less（不可数名词）: <span class="ok">less</span> water, <span class="ok">less</span> time</div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⚠️ 雅思写作禁止用语</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-rule">这些词在雅思写作中显得不正式，要替换</div>
+            <div class="g-ex">❌ a lot of → ✅ <span class="ok">a great deal of / numerous / substantial</span><br>❌ big → ✅ <span class="ok">significant / considerable / substantial</span><br>❌ get → ✅ <span class="ok">obtain / acquire / receive / become</span><br>❌ but → ✅ <span class="ok">however / nevertheless / yet / although</span><br>❌ so → ✅ <span class="ok">therefore / consequently / as a result</span><br>❌ also → ✅ <span class="ok">furthermore / moreover / in addition</span><br>❌ think → ✅ <span class="ok">believe / argue / contend / maintain</span><br>❌ show → ✅ <span class="ok">demonstrate / indicate / suggest / reveal</span></div>
+          </div></div>
+
+          <div class="g-toggle" onclick="toggleG(this)"><span class="g-title">⚠️ 标点符号使用</span><span class="g-arrow">▾</span></div>
+          <div class="g-body"><div class="g-inner">
+            <div class="g-ex"><b style="color:var(--amber)">分号（;）</b>：连接两个相关的完整句子<br>✅ The economy grew; <span class="ok">unemployment fell.</span><br><br><b style="color:var(--amber)">冒号（:）</b>：引出列举或解释<br>✅ There are three reasons<span class="ok">:</span> cost, time, and effort.<br><br><b style="color:var(--amber)">逗号（,）</b>：不能单独连接两个完整句子！<br>❌ <span class="err">It was raining, we stayed home.</span><br>✅ It was raining, <span class="ok">so</span> we stayed home.</div>
           </div></div>
         </div>
       </div>
     </div>
 
-    <!-- ===== WRITING PANEL ===== -->
+    <!-- WRITING -->
     <div id="panel-writing" class="panel">
       <div class="prompt-card">
-        <div class="prompt-label">✍️ 雅思写作题目</div>
-        <div class="prompt-en" id="w-prompt-en">Some people think that children should begin studying a foreign language at primary school rather than secondary school. To what extent do you agree or disagree?</div>
-        <div class="prompt-cn" id="w-prompt-cn">有人认为孩子应该在小学而非中学开始学习外语。你在多大程度上同意或不同意？</div>
+        <div class="prompt-lbl">✍️ 今日雅思写作题</div>
+        <div class="prompt-en" id="prompt-en">Some people think that children should begin studying a foreign language at primary school rather than secondary school. To what extent do you agree or disagree?</div>
+        <div class="prompt-cn" id="prompt-cn">有人认为孩子应该在小学而非中学开始学习外语。你在多大程度上同意或不同意？</div>
       </div>
-
-      <textarea id="writing-input" placeholder="在这里写下你的英语文章...&#10;&#10;不会写没关系！先用中文思考，再试着翻译成英文。AI 会帮你批改 😊" oninput="updateWC(this)"></textarea>
-      <div class="word-count" id="wc-display">0 词</div>
-
+      <textarea id="w-input" placeholder="在这里写下你的英语文章...&#10;&#10;💡 技巧：先想中文观点，再翻译成英文&#10;不会写没关系，AI 会帮你改进 😊" oninput="updateWC(this)"></textarea>
+      <div class="wc" id="wc-display">0 词 （雅思 Task 2 建议 250+ 词）</div>
       <div class="btn-row" style="margin-top:10px">
-        <button class="btn btn-primary" onclick="correctWriting()">🔍 AI 批改</button>
-        <button class="btn btn-secondary" onclick="getHint()">💡 思路提示</button>
+        <button class="btn btn-pri" onclick="correctW()">🔍 AI 批改</button>
+        <button class="btn btn-sec" onclick="getHint()">💡 思路提示</button>
       </div>
-      <button class="btn btn-secondary" style="margin-top:8px" onclick="changePrompt()">🔄 换一道题</button>
-
-      <div class="loading" id="loading-w">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <span>AI 正在批改...</span>
-      </div>
-      <div class="result-box" id="writing-result">
-        <div class="section-label">批改结果</div>
-        <div class="result-text" id="result-content"></div>
-      </div>
+      <button class="btn btn-sec" style="margin-top:8px" onclick="changePrompt()">🔄 换一道题</button>
+      <div class="loading" id="loading-w"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>AI 正在分析你的作文...</span></div>
+      <div class="result-box" id="w-result"><div class="label">批改结果</div><div class="result-text" id="w-result-content"></div></div>
     </div>
 
-    <!-- ===== LIFE PANEL ===== -->
+    <!-- LIFE -->
     <div id="panel-life" class="panel">
       <div class="card">
-        <div class="section-label">生活场景对话</div>
-        <div class="scenario">
-          <div class="scenario-icon" style="background:rgba(108,92,231,0.15)">☕</div>
-          <div>
-            <div class="scenario-title">咖啡厅点单</div>
-            <div class="scenario-en">Could I have a large latte, please?</div>
-            <div class="scenario-cn">请给我一杯大杯拿铁。</div>
-            <button class="btn-xs" onclick="goChat('coffee')">开始练习 →</button>
-          </div>
+        <div class="label">🌍 真实生活场景练习</div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(108,92,231,0.15)">☕</div>
+          <div><div class="scene-title">咖啡厅点单</div><div class="scene-en">Could I have a large latte, please?</div><div class="scene-cn">请给我一杯大杯拿铁。</div><button class="btn-xs" onclick="startChat('coffee')">开始对话 →</button></div>
         </div>
-        <div class="scenario">
-          <div class="scenario-icon" style="background:rgba(0,206,201,0.12)">🛒</div>
-          <div>
-            <div class="scenario-title">超市购物</div>
-            <div class="scenario-en">Excuse me, where's the dairy section?</div>
-            <div class="scenario-cn">请问乳制品区在哪里？</div>
-            <button class="btn-xs" onclick="goChat('shopping')">开始练习 →</button>
-          </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(0,206,201,0.12)">🛒</div>
+          <div><div class="scene-title">超市购物</div><div class="scene-en">Excuse me, where's the dairy section?</div><div class="scene-cn">请问乳制品区在哪里？</div><button class="btn-xs" onclick="startChat('shopping')">开始对话 →</button></div>
         </div>
-        <div class="scenario">
-          <div class="scenario-icon" style="background:rgba(253,203,110,0.12)">🏥</div>
-          <div>
-            <div class="scenario-title">医院就诊</div>
-            <div class="scenario-en">I'd like to make an appointment.</div>
-            <div class="scenario-cn">我想预约就诊。</div>
-            <button class="btn-xs" onclick="goChat('hospital')">开始练习 →</button>
-          </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(253,203,110,0.12)">🏥</div>
+          <div><div class="scene-title">医院就诊</div><div class="scene-en">I'd like to make an appointment.</div><div class="scene-cn">我想预约就诊。</div><button class="btn-xs" onclick="startChat('hospital')">开始对话 →</button></div>
         </div>
-        <div class="scenario">
-          <div class="scenario-icon" style="background:rgba(253,121,168,0.12)">✈️</div>
-          <div>
-            <div class="scenario-title">机场登机</div>
-            <div class="scenario-en">Could I have a window seat, please?</div>
-            <div class="scenario-cn">我能要靠窗的座位吗？</div>
-            <button class="btn-xs" onclick="goChat('airport')">开始练习 →</button>
-          </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(253,121,168,0.12)">✈️</div>
+          <div><div class="scene-title">机场登机</div><div class="scene-en">Could I have a window seat, please?</div><div class="scene-cn">我能要靠窗的座位吗？</div><button class="btn-xs" onclick="startChat('airport')">开始对话 →</button></div>
+        </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(85,239,196,0.12)">🏨</div>
+          <div><div class="scene-title">酒店入住</div><div class="scene-en">I have a reservation under the name...</div><div class="scene-cn">我有预订，名字是...</div><button class="btn-xs" onclick="startChat('hotel')">开始对话 →</button></div>
+        </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(253,203,110,0.12)">🏦</div>
+          <div><div class="scene-title">银行办理</div><div class="scene-en">I'd like to open a bank account.</div><div class="scene-cn">我想开一个银行账户。</div><button class="btn-xs" onclick="startChat('bank')">开始对话 →</button></div>
+        </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(108,92,231,0.15)">🍽️</div>
+          <div><div class="scene-title">餐厅用餐</div><div class="scene-en">We have a reservation for two at 7pm.</div><div class="scene-cn">我们7点有两人的预订。</div><button class="btn-xs" onclick="startChat('restaurant')">开始对话 →</button></div>
+        </div>
+        <div class="scene">
+          <div class="scene-icon" style="background:rgba(0,206,201,0.12)">🎓</div>
+          <div><div class="scene-title">学校/大学沟通</div><div class="scene-en">I'm enquiring about the course requirements.</div><div class="scene-cn">我想询问课程要求。</div><button class="btn-xs" onclick="startChat('school')">开始对话 →</button></div>
+        </div>
+      </div>
+
+      <div class="card" id="chat-card" style="display:none">
+        <div class="label" id="chat-label">对话练习</div>
+        <div class="chat-msgs" id="chat-msgs"></div>
+        <div class="loading" id="loading-chat"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>回复中...</span></div>
+        <div class="chat-input-row">
+          <textarea id="chat-input" placeholder="用英文或中文回复..." oninput="this.style.height='42px';this.style.height=this.scrollHeight+'px'"></textarea>
+          <button class="send-btn" onclick="sendChat()">➤</button>
         </div>
       </div>
 
       <div class="card">
-        <div class="section-label">今日惯用语</div>
-        <div class="idiom-row">
-          <div><div class="idiom-en">To be on the same page</div><div class="idiom-cn">达成共识；想法一致</div></div>
-          <span class="tag tag-purple">惯用语</span>
-        </div>
-        <div class="idiom-row">
-          <div><div class="idiom-en">To bite the bullet</div><div class="idiom-cn">咬牙坚持；忍痛度过</div></div>
-          <span class="tag tag-teal">惯用语</span>
-        </div>
-        <div class="idiom-row">
-          <div><div class="idiom-en">Hit the nail on the head</div><div class="idiom-cn">说到点子上；一针见血</div></div>
-          <span class="tag tag-amber">惯用语</span>
-        </div>
-      </div>
-
-      <!-- Conversation practice -->
-      <div id="chat-section" style="display:none">
-        <div class="card">
-          <div class="section-label" id="chat-scene-label">对话练习</div>
-          <div id="chat-messages" style="margin-bottom:12px;max-height:300px;overflow-y:auto"></div>
-          <div style="display:flex;gap:8px">
-            <textarea id="chat-input" placeholder="用英语或中文回复..." style="min-height:44px;height:44px;flex:1" oninput="this.style.height='44px';this.style.height=this.scrollHeight+'px'"></textarea>
-            <button class="btn btn-primary" style="width:52px;flex-shrink:0;padding:0" onclick="sendChat()">发送</button>
-          </div>
-          <div class="loading" id="loading-chat"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>回复中...</span></div>
-        </div>
+        <div class="label">📚 今日惯用语 & 短语</div>
+        <div class="idiom"><div><div class="idiom-en">To be on the same page</div><div class="idiom-cn">达成共识；想法一致</div></div><span class="tag tag-p">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">To bite the bullet</div><div class="idiom-cn">咬牙坚持；忍痛度过难关</div></div><span class="tag tag-t">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">To hit the nail on the head</div><div class="idiom-cn">说到点子上；一针见血</div></div><span class="tag tag-a">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">To break the ice</div><div class="idiom-cn">打破僵局；消除隔阂</div></div><span class="tag tag-p">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">Under the weather</div><div class="idiom-cn">感觉不舒服；身体不好</div></div><span class="tag tag-t">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">Cost an arm and a leg</div><div class="idiom-cn">非常昂贵；价格高得离谱</div></div><span class="tag tag-a">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">Once in a blue moon</div><div class="idiom-cn">千载难逢；很少发生</div></div><span class="tag tag-c">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">To go the extra mile</div><div class="idiom-cn">付出额外努力；竭尽全力</div></div><span class="tag tag-p">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">To keep something at bay</div><div class="idiom-cn">阻止；使...不靠近</div></div><span class="tag tag-t">惯用语</span></div>
+        <div class="idiom"><div><div class="idiom-en">To burn the midnight oil</div><div class="idiom-cn">开夜车；熬夜工作/学习</div></div><span class="tag tag-a">惯用语</span></div>
       </div>
     </div>
 
   </div><!-- end content -->
 
-  <!-- Bottom Nav -->
   <nav id="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('vocab',this)">
-      <span class="nav-icon">📖</span><span>词汇</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('grammar',this)">
-      <span class="nav-icon">📐</span><span>语法</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('writing',this)">
-      <span class="nav-icon">✍️</span><span>写作</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('life',this)">
-      <span class="nav-icon">🌍</span><span>生活</span>
-    </button>
+    <button class="nav-item active" onclick="switchTab('vocab',this)"><span class="nav-icon">📖</span><span>词汇</span></button>
+    <button class="nav-item" onclick="switchTab('grammar',this)"><span class="nav-icon">📐</span><span>语法</span></button>
+    <button class="nav-item" onclick="switchTab('writing',this)"><span class="nav-icon">✍️</span><span>写作</span></button>
+    <button class="nav-item" onclick="switchTab('life',this)"><span class="nav-icon">🌍</span><span>生活</span></button>
   </nav>
 </div>
 
-<!-- Install Banner -->
 <div id="install-banner">
-  <span style="font-size:28px">📱</span>
-  <div class="install-text">
-    <strong>添加到主屏幕</strong>
-    点击下方"安装"即可像 app 一样使用
-  </div>
-  <button class="btn-install" id="btn-install-action">安装</button>
-  <button class="btn-dismiss" onclick="document.getElementById('install-banner').classList.remove('show')">×</button>
+  <span style="font-size:26px">📱</span>
+  <div class="install-txt"><strong>添加到主屏幕</strong>像 App 一样使用，随时学习</div>
+  <button id="btn-install">安装</button>
+  <button id="btn-dismiss">×</button>
 </div>
 
+<script src="words.js"></script>
 <script>
-// ---- Streak ----
+// ─── Streak ───
 const today = new Date().toDateString();
-let streak = parseInt(localStorage.getItem('streak')||'1');
-let lastDate = localStorage.getItem('lastDate');
+let streak = parseInt(localStorage.getItem('ielts_streak')||'1');
+let lastDate = localStorage.getItem('ielts_lastDate');
 if(lastDate !== today){
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-  if(lastDate === yesterday.toDateString()) streak++;
-  else streak = 1;
-  localStorage.setItem('streak', streak);
-  localStorage.setItem('lastDate', today);
+  const yest = new Date(); yest.setDate(yest.getDate()-1);
+  streak = (lastDate === yest.toDateString()) ? streak+1 : 1;
+  localStorage.setItem('ielts_streak', streak);
+  localStorage.setItem('ielts_lastDate', today);
 }
-document.getElementById('streak-count').textContent = streak;
+document.getElementById('streak-n').textContent = streak;
 
-// ---- Words ----
-const words = [
-  {en:'Ambitious',ph:'/æmˈbɪʃəs/',cn:'有雄心的，有抱负的',pos:'形容词 adj.',level:'雅思高频',
-   ex:{en:'She is ambitious and always sets high goals for herself.',cn:'她很有抱负，总是为自己设立远大目标。'},
-   tip:'💡 <strong>词根：</strong>ambi（两边）+ous → 两边都想要 → 野心勃勃<br>🔗 <strong>同族：</strong>ambition（n.）、ambitiously（adv.）',
-   quiz:{q:'选出正确的句子：',opts:['She is very ambition about her career.','She is very ambitious about her career.','She very ambitiously about career.','Her ambition is an adjective.'],ans:1}},
-  {en:'Significant',ph:'/sɪɡˈnɪfɪkənt/',cn:'重大的，显著的',pos:'形容词 adj.',level:'雅思核心',
-   ex:{en:'There has been a significant improvement in air quality this year.',cn:'今年空气质量有了显著改善。'},
-   tip:'💡 <strong>联想：</strong>sign（标志）→ 有重要标志的 → 显著的<br>🔗 <strong>同族：</strong>significance（n.）、significantly（adv.）',
-   quiz:{q:'significant 最接近哪个词？',opts:['small','important','beautiful','dangerous'],ans:1}},
-  {en:'Consequently',ph:'/ˈkɒnsɪkwəntli/',cn:'因此，结果，所以',pos:'副词 adv.',level:'写作必备',
-   ex:{en:"He didn't study enough; consequently, he failed the exam.",cn:'他学习不够努力；因此，他考试不及格。'},
-   tip:'💡 <strong>写作技巧：</strong>比 so 更正式，雅思高分必备连接词<br>🔗 <strong>同义：</strong>therefore, as a result, hence',
-   quiz:{q:'哪句正确使用了 consequently？',opts:['She studied hard, consequently she is smart.','She studied hard; consequently, she passed.','Consequently she, studied hard.','She is consequently a student.'],ans:1}},
-  {en:'Inevitable',ph:'/ɪnˈevɪtəbl/',cn:'不可避免的，必然的',pos:'形容词 adj.',level:'雅思高频',
-   ex:{en:'It is inevitable that technology will continue to change our lives.',cn:'科技将继续改变我们的生活，这是不可避免的。'},
-   tip:'💡 <strong>词根：</strong>in（不）+evit（避免）+able → 不能被避免的<br>🔗 <strong>句型：</strong>It is inevitable that + 从句',
-   quiz:{q:'inevitable 的反义词是什么？',opts:['avoidable','important','necessary','possible'],ans:0}},
-  {en:'Furthermore',ph:'/ˈfɜːðəmɔː/',cn:'此外，而且，更进一步',pos:'副词 adv.',level:'写作必备',
-   ex:{en:'Exercise improves physical health. Furthermore, it boosts mental well-being.',cn:'运动改善身体健康。此外，它还能提升心理健康。'},
-   tip:'💡 <strong>写作技巧：</strong>雅思 Task 2 必备衔接词，比 also 更正式<br>🔗 <strong>同级：</strong>Moreover（更强调）、In addition（更中性）',
-   quiz:{q:'Furthermore 在文章中起什么作用？',opts:['表示对比','表示递进/补充','表示总结','表示原因'],ans:1}}
-];
+// ─── Daily 15 words based on date ───
+const DAILY = 15;
+function getDailyWords(){
+  const seed = Math.floor(Date.now() / 86400000); // changes daily
+  const shuffled = [...WORD_DB];
+  // Seeded shuffle
+  for(let i = shuffled.length-1; i>0; i--){
+    const j = (seed * 1664525 + 1013904223 + i) % (i+1);
+    [shuffled[i], shuffled[Math.abs(j)]] = [shuffled[Math.abs(j)], shuffled[i]];
+  }
+  return shuffled.slice(0, Math.min(DAILY, WORD_DB.length));
+}
 
-let curWord = 0, quizDone = false;
+const todayWords = getDailyWords();
+let curW = 0, quizDone = false;
 
 function renderWord(){
-  const w = words[curWord];
+  const w = todayWords[curW];
   document.getElementById('w-en').textContent = w.en;
   document.getElementById('w-ph').textContent = w.ph;
   document.getElementById('w-cn').textContent = w.cn;
   document.getElementById('w-pos').textContent = w.pos;
   document.getElementById('w-level').textContent = w.level;
-  document.getElementById('w-ex').innerHTML = `<div class="example-en">${w.ex.en}</div><div class="example-cn">${w.ex.cn}</div>`;
+  document.getElementById('w-topic').textContent = w.topic;
+  document.getElementById('w-ex').innerHTML = `<div class="ex-en">${w.ex.en}</div><div class="ex-cn">${w.ex.cn}</div>`;
   document.getElementById('w-tip').innerHTML = w.tip;
-  document.getElementById('w-idx').textContent = curWord+1;
-  document.getElementById('vocab-prog').style.width = ((curWord+1)/words.length*100)+'%';
-  renderQuiz();
+  document.getElementById('w-idx').textContent = curW+1;
+  document.getElementById('w-total').textContent = todayWords.length;
+  document.getElementById('vprog').style.width = ((curW+1)/todayWords.length*100)+'%';
+  renderQuiz(w);
 }
-function renderQuiz(){
+
+function renderQuiz(w){
   quizDone = false;
-  const q = words[curWord].quiz;
-  let h = `<div style="font-size:13px;color:var(--text2);margin-bottom:10px">${q.q}</div>`;
-  q.opts.forEach((o,i)=>{ h += `<button class="quiz-opt" onclick="checkQuiz(${i},${q.ans},this)">${'ABCD'[i]}. ${o}</button>`; });
-  document.getElementById('quiz-area').innerHTML = h;
+  document.getElementById('quiz-q').textContent = w.quiz.q;
+  let h='';
+  w.quiz.opts.forEach((o,i)=>{
+    h += `<button class="quiz-opt" onclick="checkQ(${i},${w.quiz.ans},this)">${'ABCD'[i]}. ${o}</button>`;
+  });
+  document.getElementById('quiz-opts').innerHTML = h;
 }
-function checkQuiz(chosen,correct,btn){
+
+function checkQ(chosen, correct, btn){
   if(quizDone) return; quizDone = true;
   document.querySelectorAll('.quiz-opt')[correct].classList.add('correct');
-  if(chosen!==correct) btn.classList.add('wrong');
+  if(chosen !== correct) btn.classList.add('wrong');
 }
-function nextWord(){ curWord=(curWord+1)%words.length; renderWord(); }
-function prevWord(){ curWord=(curWord-1+words.length)%words.length; renderWord(); }
+
+function nextW(){ if(curW < todayWords.length-1){ curW++; renderWord(); } }
+function prevW(){ if(curW > 0){ curW--; renderWord(); } }
 renderWord();
 
-// ---- Tabs ----
+// ─── Tab switching ───
 function switchTab(tab, btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
@@ -478,137 +544,207 @@ function switchTab(tab, btn){
   if(btn) btn.classList.add('active');
 }
 
-// ---- Grammar ----
-function toggleG(el){
-  const body = el.nextElementSibling;
-  const arrow = el.querySelector('.g-arrow');
-  const open = body.classList.toggle('open');
-  arrow.classList.toggle('open', open);
-}
-function switchGrammar(type, btn){
-  ['basic','tense','sentence'].forEach(t=>{
-    document.getElementById('g-'+t).style.display = t===type?'block':'none';
+// ─── Grammar ───
+function switchG(type, btn){
+  ['basic','tense','sentence','advanced','common'].forEach(t=>{
+    const el = document.getElementById('g-'+t);
+    if(el) el.style.display = t===type?'block':'none';
   });
   document.querySelectorAll('.subtab').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
 }
+function toggleG(el){
+  const body = el.nextElementSibling;
+  const arrow = el.querySelector('.g-arrow');
+  const open = body.classList.toggle('open');
+  if(arrow) arrow.style.transform = open ? 'rotate(180deg)' : '';
+}
 
-// ---- Writing ----
+// ─── Writing ───
 const prompts = [
   {en:"Some people think that children should begin studying a foreign language at primary school rather than secondary school. To what extent do you agree or disagree?",cn:"有人认为孩子应该在小学而非中学开始学习外语。你在多大程度上同意或不同意？"},
-  {en:"In many countries, the amount of crime is increasing. What do you think are the main causes of crime? How can we deal with this problem?",cn:"在许多国家，犯罪数量在增加。你认为犯罪的主要原因是什么？我们如何解决？"},
+  {en:"In many countries, the amount of crime is increasing. What do you think are the main causes of crime? How can we deal with this problem?",cn:"在许多国家，犯罪数量在增加。你认为主要原因是什么？我们如何解决？"},
   {en:"Some people believe that technology has made our lives more complicated. Others think it has made them easier. Discuss both views and give your own opinion.",cn:"一些人认为科技使生活更复杂，另一些人认为更便利。讨论两种观点并给出你的意见。"},
-  {en:"Many people are working from home instead of going to the office. Do the advantages of this trend outweigh the disadvantages?",cn:"很多人居家办公。这种趋势的优势是否大于劣势？"}
+  {en:"Many people are working from home instead of going to the office. Do the advantages of this trend outweigh the disadvantages?",cn:"很多人居家办公。这种趋势的优势是否大于劣势？"},
+  {en:"Some people think that government should spend money on building train and underground railway systems rather than on building roads. To what extent do you agree or disagree?",cn:"有人认为政府应将资金用于建设铁路和地铁系统，而非道路。你多大程度同意？"},
+  {en:"In some countries, only a few young people go to classical music concerts or museums. Why is this? What can be done to encourage young people to attend?",cn:"在一些国家，很少有年轻人去听古典音乐会或参观博物馆。原因是什么？如何鼓励年轻人参加？"},
+  {en:"The world natural resources are consumed at an ever-increasing rate. What are the dangers of this situation? What should we do?",cn:"世界自然资源的消耗速度不断加快。这种情况有什么危险？我们应该怎么做？"},
+  {en:"Some people say that advertising encourages us to buy things we do not really need. Others say that advertisements tell us about new products that may improve our lives. Discuss both views and give your opinion.",cn:"有人说广告鼓励我们购买不需要的东西。另一些人说广告让我们了解可以改善生活的新产品。讨论两种观点。"},
 ];
 let curPrompt = 0;
+
 function changePrompt(){
-  curPrompt=(curPrompt+1)%prompts.length;
-  document.getElementById('w-prompt-en').textContent = prompts[curPrompt].en;
-  document.getElementById('w-prompt-cn').textContent = prompts[curPrompt].cn;
-  document.getElementById('writing-input').value='';
-  document.getElementById('wc-display').textContent='0 词';
-  document.getElementById('writing-result').classList.remove('show');
+  curPrompt = (curPrompt+1) % prompts.length;
+  document.getElementById('prompt-en').textContent = prompts[curPrompt].en;
+  document.getElementById('prompt-cn').textContent = prompts[curPrompt].cn;
+  document.getElementById('w-input').value = '';
+  document.getElementById('wc-display').textContent = '0 词 （雅思 Task 2 建议 250+ 词）';
+  document.getElementById('w-result').classList.remove('show');
 }
+
 function updateWC(el){
-  const n = el.value.trim().split(/\s+/).filter(w=>w).length;
-  document.getElementById('wc-display').textContent = n+' 词';
+  const n = el.value.trim().split(/\s+/).filter(w=>w.length>0).length;
+  document.getElementById('wc-display').textContent = n + ' 词' + (n >= 250 ? ' ✅ 达标！' : ' （雅思 Task 2 建议 250+ 词）');
 }
-async function callClaude(userMsg){
+
+async function callAI(msg){
   const r = await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:userMsg}]})
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:msg}]})
   });
   const d = await r.json();
   return d.content&&d.content[0]?d.content[0].text:'请求失败，请重试。';
 }
-async function correctWriting(){
-  const text = document.getElementById('writing-input').value.trim();
+
+async function correctW(){
+  const text = document.getElementById('w-input').value.trim();
   if(!text){alert('请先写一些内容！');return;}
   document.getElementById('loading-w').classList.add('show');
-  document.getElementById('writing-result').classList.remove('show');
-  const prompt = prompts[curPrompt].en;
-  const res = await callClaude(`你是专业的雅思写作考官和英语老师。请批改以下学生英语作文，用中文回复，语气温和鼓励，适合初学者。\n\n题目：${prompt}\n\n学生作文：${text}\n\n请提供：1.雅思评分预估（各项0-9分）2.三个优点 3.三个改进点（具体错误+修改建议）4.1-2句升级改写示例 5.一句鼓励的话。不要用markdown的*号或#号。`);
-  document.getElementById('result-content').innerHTML = res.replace(/\n/g,'<br>');
-  document.getElementById('writing-result').classList.add('show');
+  document.getElementById('w-result').classList.remove('show');
+  const res = await callAI(`你是专业的雅思写作考官（雅思满分9分）。请用温和鼓励的中文批改以下初学者的英语作文。
+
+题目：${prompts[curPrompt].en}
+
+学生作文：${text}
+
+请严格按照以下格式回复（不要用*号或#号的markdown格式）：
+
+【雅思四项评分】
+任务回应 Task Achievement：X分
+连贯衔接 Coherence：X分  
+词汇丰富 Vocabulary：X分
+语法准确 Grammar：X分
+综合预估：X分
+
+【3个亮点】
+1. ...
+2. ...
+3. ...
+
+【3个改进点】（写出具体错误原句 → 修改后的句子，并解释原因）
+1. ...
+2. ...
+3. ...
+
+【1段升级改写示例】（选取作文中1段进行高分改写，对比展示）
+原文：...
+改写：...
+
+【老师寄语】（一句鼓励的话）`);
+  document.getElementById('w-result-content').innerHTML = res.replace(/\n/g,'<br>');
+  document.getElementById('w-result').classList.add('show');
   document.getElementById('loading-w').classList.remove('show');
+  document.getElementById('w-result').scrollIntoView({behavior:'smooth'});
 }
+
 async function getHint(){
   document.getElementById('loading-w').classList.add('show');
-  document.getElementById('writing-result').classList.remove('show');
-  const prompt = prompts[curPrompt].en;
-  const res = await callClaude(`你是雅思写作老师。针对这道题给英语初学者提供中文写作思路。\n\n题目：${prompt}\n\n请提供：1.文章结构建议（四段各写什么）2.3-4个高分观点 3.5个相关雅思词汇（英文+中文）。简洁易懂，不用markdown符号。`);
-  document.getElementById('result-content').innerHTML = res.replace(/\n/g,'<br>');
-  document.getElementById('writing-result').classList.add('show');
+  document.getElementById('w-result').classList.remove('show');
+  const res = await callAI(`你是雅思写作老师。用中文给英语零基础的学生提供写作思路和模板。
+
+题目：${prompts[curPrompt].en}
+
+请提供（不要用*号或#号的markdown格式）：
+
+【推荐文章结构】（4段式）
+第1段 开头段：...
+第2段 主体段1：...
+第3段 主体段2：...
+第4段 结尾段：...
+
+【5个可用的高分观点】
+1. ...（中文+英文翻译）
+2. ...
+3. ...
+4. ...
+5. ...
+
+【8个相关雅思词汇】
+每个词：英文 - 中文 - 例句
+
+【一句开头模板】（可以直接用的开头句）`);
+  document.getElementById('w-result-content').innerHTML = res.replace(/\n/g,'<br>');
+  document.getElementById('w-result').classList.add('show');
   document.getElementById('loading-w').classList.remove('show');
 }
 
-// ---- Life / Chat ----
-let chatHistory = [];
-let chatScene = '';
-const scenePrompts = {
-  coffee:'你是咖啡厅服务员，用简单英语和初学者练习点单对话。每次回复都附上中文翻译，如果对方说错了轻松纠正，并给出正确表达。对话自然友好。',
-  shopping:'你是超市员工，用简单英语和初学者练习购物对话。每次回复附上中文翻译，温和纠正错误并给出正确表达。',
-  hospital:'你是医院前台，用简单英语和初学者练习预约就诊对话。每次回复附上中文翻译，温和纠正错误并给出正确表达。',
-  airport:'你是机场值机员，用简单英语和初学者练习登机办理对话。每次回复附上中文翻译，温和纠正错误并给出正确表达。'
-};
-const sceneNames = {coffee:'☕ 咖啡厅点单',shopping:'🛒 超市购物',hospital:'🏥 医院就诊',airport:'✈️ 机场登机'};
-const sceneOpeners = {
-  coffee:"Good morning! Welcome to our café. What can I get for you today?\n（早上好！欢迎光临。今天想来点什么？）",
-  shopping:"Hello! Can I help you find something?\n（你好！有什么我可以帮你找的吗？）",
-  hospital:"Good morning! Welcome to City Hospital. How can I help you today?\n（早上好！欢迎来到市医院。请问有什么可以帮您？）",
-  airport:"Hello, welcome! Could I see your passport and booking reference, please?\n（您好，欢迎！请问可以看一下您的护照和预订号吗？）"
+// ─── Life Chat ───
+let chatHist = [], chatScene = '';
+const sceneConfig = {
+  coffee:{name:'☕ 咖啡厅点单',sys:'你是咖啡厅服务员。用简单英语和雅思英语初学者练习点单对话。每次回复格式：英文对话（附中文翻译），如果对方有语言错误轻松指出并给出正确表达。友好自然。',opener:"Good morning! Welcome to our café. What can I get for you today?\n（早上好！欢迎光临。今天想来点什么？）"},
+  shopping:{name:'🛒 超市购物',sys:'你是超市工作人员。用简单英语和初学者练习购物对话。每次回复附中文翻译，温和纠错。',opener:"Hello! Can I help you find something today?\n（您好！有什么我可以帮您找的吗？）"},
+  hospital:{name:'🏥 医院就诊',sys:'你是医院前台。用简单英语和初学者练习预约就诊对话。每次回复附中文翻译，温和纠错。',opener:"Good morning! Welcome to City Hospital. How can I help you today?\n（早上好！欢迎来到市医院。请问有什么可以帮您？）"},
+  airport:{name:'✈️ 机场登机',sys:'你是机场值机柜台工作人员。用简单英语和初学者练习办理登机对话。每次回复附中文翻译，温和纠错。',opener:"Hello! Welcome! Could I see your passport and booking reference, please?\n（您好！请出示您的护照和预订号码。）"},
+  hotel:{name:'🏨 酒店入住',sys:'你是酒店前台工作人员。用简单英语和初学者练习酒店入住对话。每次回复附中文翻译，温和纠错。',opener:"Good evening! Welcome to Grand Hotel. Do you have a reservation?\n（晚上好！欢迎来到大酒店。请问您有预订吗？）"},
+  bank:{name:'🏦 银行办理',sys:'你是银行柜台工作人员。用简单英语和初学者练习银行业务对话。每次回复附中文翻译，温和纠错。',opener:"Good morning! Welcome to National Bank. How may I assist you today?\n（早上好！欢迎来到国家银行。请问有什么可以帮您？）"},
+  restaurant:{name:'🍽️ 餐厅用餐',sys:'你是餐厅服务员。用简单英语和初学者练习餐厅用餐对话。每次回复附中文翻译，温和纠错。',opener:"Good evening! Do you have a reservation, or would you like a table for walk-ins?\n（晚上好！请问您有预订，还是直接就餐？）"},
+  school:{name:'🎓 学校沟通',sys:'你是大学招生/行政人员。用简单英语和初学者练习学校相关对话。每次回复附中文翻译，温和纠错。',opener:"Hello! How can I help you today? Are you a current student or prospective applicant?\n（您好！请问有什么可以帮您？您是在读学生还是申请人？）"},
 };
 
-function goChat(scene){
+function addBubble(role, text){
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap ' + role;
+  const b = document.createElement('div');
+  b.className = 'bubble ' + role;
+  b.textContent = text;
+  wrap.appendChild(b);
+  document.getElementById('chat-msgs').appendChild(wrap);
+  document.getElementById('chat-msgs').scrollTop = 9999;
+}
+
+function startChat(scene){
   chatScene = scene;
-  chatHistory = [];
-  document.getElementById('chat-scene-label').textContent = sceneNames[scene];
-  document.getElementById('chat-messages').innerHTML = '';
-  document.getElementById('chat-section').style.display = 'block';
-  document.getElementById('chat-section').scrollIntoView({behavior:'smooth'});
-  addMessage('ai', sceneOpeners[scene]);
+  chatHist = [];
+  const cfg = sceneConfig[scene];
+  document.getElementById('chat-label').textContent = cfg.name;
+  document.getElementById('chat-msgs').innerHTML = '';
+  document.getElementById('chat-card').style.display = 'block';
+  document.getElementById('chat-card').scrollIntoView({behavior:'smooth'});
+  addBubble('ai', cfg.opener);
 }
-function addMessage(role, text){
-  const div = document.createElement('div');
-  div.style.cssText = `margin-bottom:10px;display:flex;flex-direction:column;align-items:${role==='user'?'flex-end':'flex-start'}`;
-  const bubble = document.createElement('div');
-  bubble.style.cssText = `max-width:85%;padding:10px 13px;border-radius:${role==='user'?'16px 16px 4px 16px':'16px 16px 16px 4px'};font-size:13px;line-height:1.7;background:${role==='user'?'var(--purple)':'var(--bg3)'};color:${role==='user'?'#fff':'var(--text)'};white-space:pre-wrap`;
-  bubble.textContent = text;
-  div.appendChild(bubble);
-  document.getElementById('chat-messages').appendChild(div);
-  document.getElementById('chat-messages').scrollTop = 9999;
-}
+
 async function sendChat(){
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
   if(!text) return;
-  addMessage('user', text);
-  input.value=''; input.style.height='44px';
-  chatHistory.push({role:'user',content:text});
+  addBubble('user', text);
+  inp.value = ''; inp.style.height = '42px';
+  chatHist.push({role:'user', content:text});
   document.getElementById('loading-chat').classList.add('show');
-  const messages = [{role:'user',content:scenePrompts[chatScene]+'\n\n请开始对话，作为'+sceneNames[chatScene]+'的工作人员。'},{role:'assistant',content:sceneOpeners[chatScene]},...chatHistory];
+  const cfg = sceneConfig[chatScene];
+  const msgs = [
+    {role:'user', content: cfg.sys + '\n\n请开始对话。'},
+    {role:'assistant', content: cfg.opener},
+    ...chatHist
+  ];
   try{
     const r = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages})
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:msgs})
     });
     const d = await r.json();
     const reply = d.content&&d.content[0]?d.content[0].text:'请重试。';
-    chatHistory.push({role:'assistant',content:reply});
-    addMessage('ai', reply);
-  }catch(e){addMessage('ai','连接失败，请重试。');}
+    chatHist.push({role:'assistant', content:reply});
+    addBubble('ai', reply);
+  }catch(e){ addBubble('ai','连接失败，请检查网络后重试。'); }
   document.getElementById('loading-chat').classList.remove('show');
 }
-document.getElementById('chat-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}});
 
-// ---- PWA Install ----
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault(); deferredPrompt=e;
-  setTimeout(()=>document.getElementById('install-banner').classList.add('show'),2000);
+document.getElementById('chat-input').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
 });
-document.getElementById('btn-install-action').addEventListener('click',()=>{
-  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{deferredPrompt=null;}); }
+
+// ─── PWA Install ───
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredPrompt = e;
+  setTimeout(()=>document.getElementById('install-banner').classList.add('show'), 3000);
+});
+document.getElementById('btn-install').addEventListener('click', ()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; }
+  document.getElementById('install-banner').classList.remove('show');
+});
+document.getElementById('btn-dismiss').addEventListener('click', ()=>{
   document.getElementById('install-banner').classList.remove('show');
 });
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
