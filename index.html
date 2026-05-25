@@ -174,25 +174,29 @@ textarea:focus{border-color:var(--purple)}
     <div id="panel-vocab" class="panel active">
       <div class="prog-track"><div class="prog-fill" id="vprog" style="width:6%"></div></div>
       <div class="wrow">
-        <span class="wcount">今日 <b id="w-idx">1</b> / <b id="w-total">15</b></span>
-        <span class="tag tag-t" id="w-topic">学术</span>
+        <span class="wcount">Today <b id="w-idx">1</b> / <b id="w-total">15</b></span>
+        <span class="tag tag-t" id="w-topic">Academic</span>
       </div>
-      <div class="word-hero">
+      <div class="word-hero" id="word-hero-card">
         <div class="w-en" id="w-en">—</div>
         <div class="w-ph" id="w-ph"></div>
-        <div class="w-cn" id="w-cn"></div>
         <div class="w-tags">
           <span class="tag tag-p" id="w-pos"></span>
           <span class="tag tag-a" id="w-level"></span>
         </div>
-        <div class="ex-box" id="w-ex"></div>
+        <!-- CN hidden by default, tap to reveal -->
+        <div id="w-cn-wrap" style="margin-top:10px;position:relative;z-index:1">
+          <button id="reveal-btn" onclick="revealCN()" style="background:rgba(255,255,255,0.1);border:1px dashed rgba(162,155,254,0.5);border-radius:20px;padding:6px 18px;color:var(--purple-light);font-size:13px;font-family:inherit;cursor:pointer">👁 Tap to see Chinese meaning</button>
+          <div id="w-cn" style="display:none;font-size:19px;color:var(--teal);font-weight:500;margin-top:6px"></div>
+        </div>
+        <div class="ex-box" id="w-ex" style="text-align:left"></div>
       </div>
       <div class="card">
-        <div class="label">记忆技巧</div>
+        <div class="label">Memory Tips</div>
         <div class="tip-box" id="w-tip"></div>
       </div>
       <div class="card">
-        <div class="label">小测验</div>
+        <div class="label">Quick Quiz</div>
         <div class="quiz-q" id="quiz-q"></div>
         <div id="quiz-opts"></div>
       </div>
@@ -210,7 +214,8 @@ textarea:focus{border-color:var(--purple)}
         <button class="subtab" onclick="switchG('tense',this)">时态系统</button>
         <button class="subtab" onclick="switchG('sentence',this)">高分句型</button>
         <button class="subtab" onclick="switchG('advanced',this)">高级语法</button>
-        <button class="subtab" onclick="switchG('common',this)">常见错误</button>
+        <button class="subtab" onclick="switchG('common',this)">Common Errors</button>
+        <button class="subtab" onclick="switchG('practice',this)">✏️ Practice</button>
       </div>
 
       <div id="g-basic">
@@ -382,6 +387,33 @@ textarea:focus{border-color:var(--purple)}
           </div></div>
         </div>
       </div>
+
+      <!-- GRAMMAR PRACTICE PANEL -->
+      <div id="g-practice" style="display:none">
+        <div class="card">
+          <div class="label">✏️ Grammar Practice — AI checks your answer</div>
+          <div id="gprac-topic-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            <button class="btn-xs gprac-topic active" data-topic="tense" onclick="loadGPrac('tense',this)">Tenses</button>
+            <button class="btn-xs gprac-topic" data-topic="article" onclick="loadGPrac('article',this)">Articles</button>
+            <button class="btn-xs gprac-topic" data-topic="conditional" onclick="loadGPrac('conditional',this)">Conditionals</button>
+            <button class="btn-xs gprac-topic" data-topic="passive" onclick="loadGPrac('passive',this)">Passive Voice</button>
+            <button class="btn-xs gprac-topic" data-topic="clause" onclick="loadGPrac('clause',this)">Clauses</button>
+          </div>
+          <!-- question display -->
+          <div id="gprac-q-box" style="background:rgba(108,92,231,0.1);border-radius:10px;padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Exercise</div>
+            <div id="gprac-q" style="font-size:14px;color:var(--text);line-height:1.8"></div>
+            <div id="gprac-rule" style="font-size:12px;color:var(--purple-light);margin-top:6px;font-style:italic"></div>
+          </div>
+          <textarea id="gprac-input" placeholder="Type your answer here in English..." style="min-height:80px" oninput="this.style.height='80px';this.style.height=this.scrollHeight+'px'"></textarea>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn btn-pri" onclick="checkGPrac()">✓ Check Answer</button>
+            <button class="btn btn-sec" onclick="nextGPrac()">Next Question →</button>
+          </div>
+          <div class="loading" id="loading-gprac"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>AI is checking...</span></div>
+          <div class="result-box" id="gprac-result"><div class="result-text" id="gprac-result-text"></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- WRITING -->
@@ -521,11 +553,15 @@ function renderWord(){
   const w = todayWords[curW];
   document.getElementById('w-en').textContent = w.en;
   document.getElementById('w-ph').textContent = w.ph;
-  document.getElementById('w-cn').textContent = w.cn;
   document.getElementById('w-pos').textContent = w.pos;
   document.getElementById('w-level').textContent = w.level;
   document.getElementById('w-topic').textContent = w.topic;
-  document.getElementById('w-ex').innerHTML = `<div class="ex-en">${w.ex.en}</div><div class="ex-cn">${w.ex.cn}</div>`;
+  // reset CN reveal
+  document.getElementById('reveal-btn').style.display = 'inline-block';
+  document.getElementById('w-cn').style.display = 'none';
+  document.getElementById('w-cn').textContent = w.cn;
+  // example: English only, tap word to see CN translation
+  document.getElementById('w-ex').innerHTML = `<div class="ex-en">${w.ex.en}</div><div style="font-size:11px;color:var(--text3);margin-top:3px">📌 Long-press any word to translate</div>`;
   document.getElementById('w-tip').innerHTML = w.tip;
   document.getElementById('w-idx').textContent = curW+1;
   document.getElementById('w-total').textContent = todayWords.length;
@@ -536,42 +572,41 @@ function renderWord(){
 function renderQuiz(w){
   quizDone = false;
   document.getElementById('quiz-q').textContent = w.quiz.q;
-  // option CN translations (brief)
-  const optCN = w.quiz.optCN || [];
   let h='';
   w.quiz.opts.forEach((o,i)=>{
-    const cn = optCN[i] ? `<div class="quiz-opt-cn" id="ocn-${i}">${optCN[i]}</div>` : '';
     h += `<div class="quiz-opt-row">
-      <button class="quiz-opt" id="qopt-${i}" onclick="checkQ(${i},${w.quiz.ans},this,${JSON.stringify(w.quiz.opts)},${w.quiz.ans})">${'ABCD'[i]}. ${o}</button>
-      ${cn}
+      <button class="quiz-opt" data-idx="${i}" data-ans="${w.quiz.ans}">${'ABCD'[i]}. ${o}</button>
     </div>`;
   });
   h += `<div class="quiz-explain" id="quiz-explain"></div>`;
   document.getElementById('quiz-opts').innerHTML = h;
+  // attach click handlers safely
+  document.querySelectorAll('.quiz-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const chosen = parseInt(btn.dataset.idx);
+      const correct = parseInt(btn.dataset.ans);
+      handleQuiz(chosen, correct, w);
+    });
+  });
 }
 
-async function checkQ(chosen, correct, btn, opts, ans){
+async function handleQuiz(chosen, correct, w){
   if(quizDone) return; quizDone = true;
-  // show correct/wrong highlighting
-  document.getElementById('qopt-'+correct).classList.add('correct');
-  if(chosen !== correct) btn.classList.add('wrong');
-  // show all CN translations
-  opts.forEach((_,i)=>{
-    const el = document.getElementById('ocn-'+i);
-    if(el) el.style.display = 'block';
+  document.querySelectorAll('.quiz-opt').forEach((b,i)=>{
+    if(i===correct) b.classList.add('correct');
+    else if(i===chosen) b.classList.add('wrong');
+    b.disabled = true;
   });
-  // get AI explanation
   const explainEl = document.getElementById('quiz-explain');
   explainEl.classList.add('show');
-  explainEl.innerHTML = '<span style="color:var(--text3)">AI 正在解析...</span>';
-  const chosenText = opts[chosen];
-  const correctText = opts[correct];
-  const w = todayWords[curW];
+  explainEl.innerHTML = '<span style="color:var(--text3)">⏳ AI 正在解析...</span>';
+  const chosenText = w.quiz.opts[chosen];
+  const correctText = w.quiz.opts[correct];
   const prompt = chosen === correct
-    ? `用2句简洁中文解释为什么"${correctText}"是正确答案，结合单词"${w.en}"（${w.cn}）的用法来说明。不要用markdown格式。`
-    : `用2-3句简洁中文解释：为什么"${chosenText}"是错误的，为什么"${correctText}"才是正确答案。结合单词"${w.en}"（${w.cn}）的语法用法来说明。不要用markdown格式。`;
+    ? `用2句简洁中文解释为什么"${correctText}"是正确答案，结合单词"${w.en}"（${w.cn}）的用法说明。不用markdown。`
+    : `用中文解释：1）为什么选"${chosenText}"是错的；2）为什么"${correctText}"才正确。结合"${w.en}"（${w.cn}）的语法用法。不用markdown，2-3句即可。`;
   const res = await callAI(prompt, 200);
-  explainEl.innerHTML = (chosen === correct ? '✅ 回答正确！<br>' : '❌ 选错了，来看看原因：<br>') + res.replace(/\n/g,'<br>');
+  explainEl.innerHTML = (chosen===correct?'✅ 回答正确！<br>':'❌ 选错了：<br>') + res.replace(/\n/g,'<br>');
 }
 
 function nextW(){ if(curW < todayWords.length-1){ curW++; renderWord(); } }
@@ -588,7 +623,7 @@ function switchTab(tab, btn){
 
 // ─── Grammar ───
 function switchG(type, btn){
-  ['basic','tense','sentence','advanced','common'].forEach(t=>{
+  ['basic','tense','sentence','advanced','common','practice'].forEach(t=>{
     const el = document.getElementById('g-'+t);
     if(el) el.style.display = t===type?'block':'none';
   });
@@ -782,7 +817,106 @@ document.getElementById('chat-input').addEventListener('keydown', e=>{
   if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
 });
 
-// ─── Click to Translate ───
+// ─── Reveal CN ───
+function revealCN(){
+  document.getElementById('reveal-btn').style.display='none';
+  document.getElementById('w-cn').style.display='block';
+}
+
+// ─── Grammar Practice ───
+const gpracData = {
+  tense:[
+    {q:"Complete: She ___ (study) English for three years before she moved to London.",rule:"Hint: Use past perfect — had + past participle",ans:"had studied"},
+    {q:"Complete: By the time you arrive, I ___ (finish) cooking dinner.",rule:"Hint: Future perfect — will have + past participle",ans:"will have finished"},
+    {q:"Choose the correct form: I ___ (work) here since 2020.\nA) work  B) have worked  C) worked  D) was working",rule:"Hint: 'since' signals present perfect",ans:"have worked"},
+    {q:"Correct the error: 'She don't like coffee.' What is the correct sentence?",rule:"Hint: Third person singular present tense",ans:"She doesn't like coffee."},
+    {q:"Complete: When I ___ (arrive) at the station, the train had already left.",rule:"Hint: Past simple for the later action",ans:"arrived"},
+    {q:"Complete: The report ___ (publish) next Monday by the committee.",rule:"Hint: Future passive voice",ans:"will be published"},
+    {q:"Is this correct? 'I have seen him yesterday.' Why or why not? Write the correct version.",rule:"Hint: 'Yesterday' requires a specific tense",ans:"I saw him yesterday."},
+  ],
+  article:[
+    {q:"Fill in: ___ Eiffel Tower is in ___ Paris, ___ capital of France.",rule:"Hint: Specific landmark vs. city/general names",ans:"The / (no article) / the"},
+    {q:"Fill in: She wants to become ___ engineer. She is studying at ___ university.",rule:"Hint: Jobs and institutions — a/an or nothing?",ans:"an / a"},
+    {q:"Correct the error: 'I go to the school every day.' Explain why.",rule:"Hint: Fixed expressions with no article",ans:"I go to school every day. — 'school' as institution needs no article."},
+    {q:"Fill in: ___ life is short. We must make ___ most of every day.",rule:"Hint: Abstract nouns and fixed phrases",ans:"(no article) / the"},
+    {q:"Choose: 'I read ___ interesting book last night.'\nA) a  B) an  C) the  D) no article",rule:"Hint: Singular countable noun, first mention",ans:"an"},
+  ],
+  conditional:[
+    {q:"Complete: If I ___ (be) you, I would apply for that job.",rule:"Hint: Second conditional — unreal present situation",ans:"were"},
+    {q:"Complete: If she ___ (study) harder, she will pass the exam.",rule:"Hint: First conditional — real possibility",ans:"studies"},
+    {q:"Complete: If they ___ (leave) earlier, they would have caught the train.",rule:"Hint: Third conditional — past unreal situation",ans:"had left"},
+    {q:"Identify the type and correct if wrong: 'If it will rain, I stay home.'",rule:"Hint: Real condition about the future",ans:"First conditional. Correct: If it rains, I will stay home."},
+    {q:"Complete: I wish I ___ (speak) five languages fluently.",rule:"Hint: Wish + past simple for present unreality",ans:"spoke / could speak"},
+  ],
+  passive:[
+    {q:"Change to passive: 'Scientists discovered penicillin in 1928.'",rule:"Hint: was/were + past participle",ans:"Penicillin was discovered (by scientists) in 1928."},
+    {q:"Change to passive: 'The government is introducing new laws.'",rule:"Hint: is/are being + past participle",ans:"New laws are being introduced (by the government)."},
+    {q:"Change to passive: 'They have built a new hospital in the city.'",rule:"Hint: has/have been + past participle",ans:"A new hospital has been built in the city."},
+    {q:"Is this passive correct? 'The book was wrote by Orwell.' Fix if needed.",rule:"Hint: Check the past participle form",ans:"The book was written by Orwell. ('wrote' is past simple, not past participle)"},
+    {q:"Change to passive: 'The teacher will explain the rules tomorrow.'",rule:"Hint: will be + past participle",ans:"The rules will be explained (by the teacher) tomorrow."},
+  ],
+  clause:[
+    {q:"Combine using a relative clause: 'The woman is my teacher. She is standing by the door.'",rule:"Hint: who / which / that — which pronoun for people?",ans:"The woman who is standing by the door is my teacher."},
+    {q:"Add a concession clause: 'He is very talented. He hasn't found a job yet.' (use although/despite)",rule:"Hint: although + clause; despite + noun/gerund",ans:"Although he is very talented, he hasn't found a job yet. OR Despite being very talented, he hasn't found a job yet."},
+    {q:"Identify the error: 'The book, that I borrowed from the library, was fascinating.'",rule:"Hint: Restrictive vs non-restrictive relative clauses",ans:"Error: 'that' cannot be used in non-restrictive clauses. Correct: The book, which I borrowed from the library, was fascinating."},
+    {q:"Complete with the correct conjunction: '___ the weather was terrible, the match continued.' (contrast)",rule:"Hint: Contrast conjunctions: although, even though, despite",ans:"Although / Even though"},
+    {q:"Rewrite using a result clause: 'She studied hard. She passed the exam.' (use so...that OR consequently)",rule:"Hint: Show cause and result",ans:"She studied so hard that she passed the exam. OR She studied hard; consequently, she passed the exam."},
+  ]
+};
+
+let gpracTopic = 'tense';
+let gpracIdx = 0;
+
+function loadGPrac(topic, btn){
+  gpracTopic = topic;
+  gpracIdx = 0;
+  document.querySelectorAll('.gprac-topic').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  showGPracQ();
+  document.getElementById('gprac-result').classList.remove('show');
+  document.getElementById('gprac-input').value = '';
+}
+
+function showGPracQ(){
+  const qs = gpracData[gpracTopic];
+  const q = qs[gpracIdx % qs.length];
+  document.getElementById('gprac-q').textContent = q.q;
+  document.getElementById('gprac-rule').textContent = q.rule;
+  document.getElementById('gprac-result').classList.remove('show');
+  document.getElementById('gprac-input').value = '';
+}
+
+function nextGPrac(){
+  gpracIdx++;
+  showGPracQ();
+}
+
+async function checkGPrac(){
+  const answer = document.getElementById('gprac-input').value.trim();
+  if(!answer){ alert('Please write your answer first!'); return; }
+  document.getElementById('loading-gprac').classList.add('show');
+  document.getElementById('gprac-result').classList.remove('show');
+  const qs = gpracData[gpracTopic];
+  const q = qs[gpracIdx % qs.length];
+  const prompt = `You are an English grammar teacher for IELTS students. A student answered a grammar exercise. Give feedback in Chinese (简体中文).
+
+Exercise: ${q.q}
+Expected answer: ${q.ans}
+Student's answer: ${answer}
+
+Reply format (no markdown * or #):
+✅ or ❌ [Correct/Incorrect]
+[2-3 sentences in Chinese explaining: 1) whether the answer is right or wrong 2) the grammar rule being tested 3) the correct answer with explanation if wrong]
+Example sentence using the correct grammar.`;
+  const res = await callAI(prompt, 300);
+  document.getElementById('gprac-result-text').innerHTML = res.replace(/\n/g,'<br>');
+  document.getElementById('gprac-result').classList.add('show');
+  document.getElementById('loading-gprac').classList.remove('show');
+  document.getElementById('gprac-result').scrollIntoView({behavior:'smooth'});
+}
+
+// init grammar practice
+loadGPrac('tense', null);
 const tooltip = document.getElementById('trans-tooltip');
 let transCache = {};
 let tooltipTimer;
